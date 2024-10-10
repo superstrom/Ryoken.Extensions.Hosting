@@ -29,4 +29,4 @@ jobs:
     - name: Test
       run: dotnet test -c Release --no-build --verbosity normal
     - name: Run Example
-      run: dotnet run -c Release --project Ryoken.Extensions.Hosting.ExampleConsole
+      run: dotnet run -c Release --no-build --project Ryoken.Extensions.Hosting.ExampleConsole
