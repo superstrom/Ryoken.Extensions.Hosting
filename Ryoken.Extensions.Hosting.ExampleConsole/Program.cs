@@ -24,7 +24,7 @@ internal class ConsoleMain : IConsoleMain
     {
         Logger.LogInformation("Hello From ConsoleMain");
 
-        while (!token.IsCancellationRequested)
+        for (int i = 0; i < 10 && !token.IsCancellationRequested; ++i)
         {
             var timeout = Task.Delay(TimeSpan.FromSeconds(1));
 
