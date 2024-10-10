@@ -30,8 +30,11 @@ namespace Ryoken.Extensions.Hosting
                     // we also need a slight delay, so all the Started message can flush before we actually start.
                     await Task.Delay(TimeSpan.FromSeconds(0.5));
 
+                    // use a linked source based on the Stopping token
+                    var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.ApplicationStopping);
+
                     // pass the Stopping token, so _main can stop if the App signals
-                    await _main.ExecuteAsync(_lifetime.ApplicationStopping).ConfigureAwait(false);
+                    await _main.ExecuteAsync(cts.Token).ConfigureAwait(false);
 
                     // when _main finishes, then signal that the app can finish.
                     _exitCode = 0;
