@@ -8,6 +8,7 @@ Console.WriteLine("Hello, World!");
 
 await Host.CreateDefaultBuilder(args)
           .ConfigureServices(services => services.AddConsoleMain<ConsoleMain>())
+          .ConfigureLogging(l => l.SetMinimumLevel(LogLevel.Debug))
           .RunConsoleAsync();
 
 
