@@ -4,6 +4,15 @@
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)\Ryoken.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <ProjectUrl>https://github.com/superstrom/Ryoken.Extensions.Hosting</ProjectUrl>
+    <RepositoryUrl>https://github.com/superstrom/Ryoken.Extensions.Hosting.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Authors>superstrom</Authors>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.143" PrivateAssets="all" />
   </ItemGroup>
