@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyFile>$(SolutionDir)\Ryoken.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)\Ryoken.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
