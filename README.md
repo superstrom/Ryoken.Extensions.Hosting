@@ -7,3 +7,20 @@ Ever wanted to have a simple Console app that terminates when done, but still ha
 This library allows you to easily implement a single function and handles the ApplicationLifetime interaction.
 
 Based on https://dfederm.com/building-a-console-app-with-.net-generic-host/
+
+## Minimal Example
+```csharp
+await Host.CreateDefaultBuilder(args)
+          .ConfigureServices(services => services.AddConsoleMain<ConsoleMain>())
+          .RunConsoleAsync();
+
+class ConsoleMain : IConsoleMain
+{
+    public ConsoleMain(/* Inject your services here */){}
+
+    public async Task ExecuteAsync(CancellationToken token)
+    {
+        Logger.LogInformation("Hello World!");
+    }
+}
+```
