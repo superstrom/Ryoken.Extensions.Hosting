@@ -54,7 +54,5 @@ jobs:
     - name: Attest Build Provenance
       uses: actions/attest-build-provenance@v1.4.3
       with:
-        subject-path:
-          "Ryoken.Extensions.Hosting/bin/Release/*.nupkg"
-          "Ryoken.Extensions.Hosting/bin/Release/*.snupkg"
+        subject-path: "Ryoken.Extensions.Hosting/bin/Release/*.nupkg"
 
