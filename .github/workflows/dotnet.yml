@@ -43,11 +43,18 @@ jobs:
     - name: Pack NuPkg
       run: dotnet pack --no-restore --no-build -c Release
     - name: Publish NuPkg to Github Packages
+      run: dotnet nuget push "Ryoken.Extensions.Hosting/bin/Release/*.nupkg" --api-key ${{ secrets.GITHUB_TOKEN }} --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --skip-duplicate
+    - name: Publish Symbols to Github Packages
       run: dotnet nuget push "Ryoken.Extensions.Hosting/bin/Release/*.snupkg" --api-key ${{ secrets.GITHUB_TOKEN }} --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --skip-duplicate
     - name: Publish NuPkg to NuGet.org
+      run: dotnet nuget push "Ryoken.Extensions.Hosting/bin/Release/*.nupkg" --api-key ${{ secrets.NUGETORG_API_KEY }}  --source https://api.nuget.org/v3/index.json --skip-duplicate
+    - name: Publish Symbols to NuGet.org
       run: dotnet nuget push "Ryoken.Extensions.Hosting/bin/Release/*.snupkg" --api-key ${{ secrets.NUGETORG_API_KEY }}  --source https://api.nuget.org/v3/index.json --skip-duplicate
 
     - name: Attest Build Provenance
       uses: actions/attest-build-provenance@v1.4.3
       with:
-        subject-path: "Ryoken.Extensions.Hosting/bin/Release/*.snupkg"
+        subject-path:
+          "Ryoken.Extensions.Hosting/bin/Release/*.nupkg"
+          "Ryoken.Extensions.Hosting/bin/Release/*.snupkg"
+
