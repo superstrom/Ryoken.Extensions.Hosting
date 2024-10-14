@@ -46,9 +46,12 @@ jobs:
       run: dotnet nuget push "Ryoken.Extensions.Hosting/bin/Release/*.nupkg" --api-key ${{ secrets.GITHUB_TOKEN }} --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --skip-duplicate
     - name: Publish Symbols to Github Packages
       run: dotnet nuget push "Ryoken.Extensions.Hosting/bin/Release/*.snupkg" --api-key ${{ secrets.GITHUB_TOKEN }} --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --skip-duplicate
+
     - name: Publish NuPkg to NuGet.org
+      if: github.event_name == 'push'
       run: dotnet nuget push "Ryoken.Extensions.Hosting/bin/Release/*.nupkg" --api-key ${{ secrets.NUGETORG_API_KEY }}  --source https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Publish Symbols to NuGet.org
+      if: github.event_name == 'push'
       run: dotnet nuget push "Ryoken.Extensions.Hosting/bin/Release/*.snupkg" --api-key ${{ secrets.NUGETORG_API_KEY }}  --source https://api.nuget.org/v3/index.json --skip-duplicate
 
     - name: Attest Build Provenance
