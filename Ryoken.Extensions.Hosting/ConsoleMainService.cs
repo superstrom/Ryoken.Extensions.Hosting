@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Ryoken.Extensions.Hosting
 {
-    public sealed class ConsoleMainService : IHostedService
+    public sealed partial class ConsoleMainService : IHostedService
     {
         private readonly IConsoleMain _main;
         private readonly ILogger<ConsoleMainService> _logger;
@@ -18,9 +18,36 @@ namespace Ryoken.Extensions.Hosting
             this._logger = logger;
         }
 
+        [LoggerMessage(LogLevel.Debug, "Start event detected, setting up Main")]
+        static partial void LogStart(ILogger logger);
+
+        [LoggerMessage(LogLevel.Debug, "Main is starting")]
+        static partial void LogMainIsStarting(ILogger logger);
+
+        [LoggerMessage(LogLevel.Debug, "Main finished normally")]
+        static partial void LogMainFinishedNormally(ILogger logger);
+
+        [LoggerMessage(LogLevel.Debug, "Main was cancelled")]
+        static partial void LogMainCancelled(ILogger logger);
+
+        [LoggerMessage(LogLevel.Critical, "Unhandled Exception in Main")]
+        static partial void LogUnhandledInMain(ILogger logger, Exception ex);
+
+        [LoggerMessage(LogLevel.Debug, "Main is finished, calling StopApplication")]
+        static partial void LogMainFinished(ILogger logger);
+
+        [LoggerMessage(LogLevel.Debug, "Stop event detected, waiting for main to finish")]
+        static partial void LogStop(ILogger logger);
+
+        [LoggerMessage(LogLevel.Debug, "Main was cancelled, but didn't stop in time")]
+        static partial void LogMainDidNotStop(ILogger logger);
+
+        [LoggerMessage(LogLevel.Debug, "Stopping, Bye!")]
+        static partial void LogAllDone(ILogger logger);
+
         public Task StartAsync(CancellationToken _)
         {
-            _logger.LogDebug(nameof(StartAsync));
+            LogStart(_logger);
 
             // StartAsync happens during Application Start (aka before ApplicationStarted),
             // so register an action to run on ApplicationStarted.
@@ -30,6 +57,7 @@ namespace Ryoken.Extensions.Hosting
                 {
                     // we also need a slight delay, so all the Started message can flush before we actually start.
                     await Task.Delay(TimeSpan.FromSeconds(0.5));
+                    LogMainIsStarting(_logger);
 
                     // use a linked source based on the Stopping token, so _main can stop if the App signals
                     var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.ApplicationStopping);
@@ -40,23 +68,23 @@ namespace Ryoken.Extensions.Hosting
                     // wait for the task to finish normally
                     await _mainTask.ConfigureAwait(false);
 
-                    _logger.LogDebug("Main finished normally");
+                    LogMainFinishedNormally(_logger);
                     // when _main finishes, then signal that the app can finish.
                     _exitCode = 0;
                 }
                 // absorb TaskCancelledException.
                 catch (TaskCanceledException)
                 {
-                    _logger.LogDebug("Task Cancelled");
+                    LogMainCancelled(_logger);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogCritical(ex, "Unhandled");
+                    LogUnhandledInMain(_logger, ex);
                     _exitCode = 1;
                 }
                 finally
                 {
-                    _logger.LogDebug("Calling StopApplication");
+                    LogMainFinished(_logger);
                     _lifetime.StopApplication();
                 }
             });
@@ -66,21 +94,21 @@ namespace Ryoken.Extensions.Hosting
 
         public async Task StopAsync(CancellationToken _)
         {
-            _logger.LogDebug(nameof(StopAsync));
+            LogStop(_logger);
 
             try
             {
                 // wait for the main task to finish, up to 3 seconds
+                var timeout = TimeSpan.FromSeconds(3);
                 if (_mainTask != null)
-                    await _mainTask.WaitAsync(TimeSpan.FromSeconds(3));
+                    await _mainTask.WaitAsync(timeout);
             }
             catch (TimeoutException)
             {
-                // swallow any timeout
-                _logger.LogDebug("Main was cancelled, but didn't stop in time");
+                LogMainDidNotStop(_logger);
             }
 
-            _logger.LogDebug("Bye!");
+            LogAllDone(_logger);
 
             Environment.ExitCode = _exitCode.GetValueOrDefault(-1);
         }
