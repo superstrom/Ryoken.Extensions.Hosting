@@ -10,17 +10,20 @@ Based on https://dfederm.com/building-a-console-app-with-.net-generic-host/
 
 ## Minimal Example
 ```csharp
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
+
+using Ryoken.Extensions.Hosting;
+
 await Host.CreateDefaultBuilder(args)
           .ConfigureServices(services => services.AddConsoleMain<ConsoleMain>())
           .RunConsoleAsync();
 
-class ConsoleMain : IConsoleMain
+class ConsoleMain(ILogger<ConsoleMain> Logger) : IConsoleMain
 {
-    public ConsoleMain(/* Inject your services here */){}
-
     public async Task ExecuteAsync(CancellationToken token)
     {
-        Logger.LogInformation("Hello World!");
+        Logger.LogInformation("Hello from ConsoleMain!");
     }
 }
 ```

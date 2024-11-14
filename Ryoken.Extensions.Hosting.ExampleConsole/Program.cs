@@ -4,26 +4,16 @@ using Microsoft.Extensions.Logging;
 
 using Ryoken.Extensions.Hosting;
 
-Console.WriteLine("Hello, World!");
-
 await Host.CreateDefaultBuilder(args)
           .ConfigureServices(services => services.AddConsoleMain<ConsoleMain>())
           .ConfigureLogging(l => l.SetMinimumLevel(LogLevel.Debug))
           .RunConsoleAsync();
 
-
-internal class ConsoleMain : IConsoleMain
+class ConsoleMain(ILogger<ConsoleMain> Logger) : IConsoleMain
 {
-    public ConsoleMain(ILogger<ConsoleMain> logger)
-    {
-        Logger = logger;
-    }
-
-    public ILogger<ConsoleMain> Logger { get; }
-
     public async Task ExecuteAsync(CancellationToken token)
     {
-        Logger.LogInformation("Hello From ConsoleMain");
+        Logger.LogInformation("Hello from ConsoleMain!");
 
         for (int i = 0; i < 10 && !token.IsCancellationRequested; ++i)
         {
@@ -33,5 +23,7 @@ internal class ConsoleMain : IConsoleMain
 
             await timeout;
         }
+
+        Logger.LogInformation("Done!");
     }
 }
