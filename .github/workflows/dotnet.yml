@@ -55,7 +55,7 @@ jobs:
       run: dotnet nuget push "Ryoken.Extensions.Hosting/bin/Release/*.snupkg" --api-key ${{ secrets.NUGETORG_API_KEY }}  --source https://api.nuget.org/v3/index.json --skip-duplicate
 
     - name: Attest Build Provenance
-      uses: actions/attest-build-provenance@v2.2.0
+      uses: actions/attest-build-provenance@v2.2.2
       with:
         subject-path: "Ryoken.Extensions.Hosting/bin/Release/*.nupkg"
 
