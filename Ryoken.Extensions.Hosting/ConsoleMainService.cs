@@ -99,8 +99,9 @@ namespace Ryoken.Extensions.Hosting
             try
             {
                 // wait for the main task to finish, up to 3 seconds
+                // unless we already caught an exception from main
                 var timeout = TimeSpan.FromSeconds(3);
-                if (_mainTask != null)
+                if (_mainTask != null && _exitCode != 1)
                     await _mainTask.WaitAsync(timeout);
             }
             catch (TimeoutException)

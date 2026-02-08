@@ -24,6 +24,9 @@ class ConsoleMain(ILogger<ConsoleMain> Logger) : IConsoleMain
             await timeout;
         }
 
+        if (!token.IsCancellationRequested)
+            throw new ApplicationException("Unhandled error in ConsoleMain");
+
         Logger.LogInformation("Done!");
     }
 }
