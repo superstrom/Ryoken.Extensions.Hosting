@@ -92,7 +92,7 @@ namespace Ryoken.Extensions.Hosting
             return Task.CompletedTask;
         }
 
-        public async Task StopAsync(CancellationToken _)
+        public async Task StopAsync(CancellationToken token)
         {
             LogStop(_logger);
 
@@ -102,7 +102,7 @@ namespace Ryoken.Extensions.Hosting
                 // unless we already caught an exception from main
                 var timeout = TimeSpan.FromSeconds(3);
                 if (_mainTask != null && _exitCode != 1)
-                    await _mainTask.WaitAsync(timeout);
+                        await _mainTask.WaitAsync(TimeSpan.FromSeconds(3), token);
             }
             catch (TimeoutException)
             {
