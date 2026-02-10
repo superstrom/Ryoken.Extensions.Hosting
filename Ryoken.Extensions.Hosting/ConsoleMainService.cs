@@ -42,8 +42,8 @@ namespace Ryoken.Extensions.Hosting
         [LoggerMessage(LogLevel.Debug, "Main was cancelled, but didn't stop in time")]
         static partial void LogMainDidNotStop(ILogger logger);
 
-        [LoggerMessage(LogLevel.Debug, "Stopping, Bye!")]
-        static partial void LogAllDone(ILogger logger);
+        [LoggerMessage(LogLevel.Debug, "Stopping, Bye! {exitCode}")]
+        static partial void LogAllDone(ILogger logger, int? exitCode);
 
         public Task StartAsync(CancellationToken _)
         {
@@ -109,7 +109,7 @@ namespace Ryoken.Extensions.Hosting
                 LogMainDidNotStop(_logger);
             }
 
-            LogAllDone(_logger);
+            LogAllDone(_logger, _exitCode);
 
             Environment.ExitCode = _exitCode.GetValueOrDefault(-1);
         }
