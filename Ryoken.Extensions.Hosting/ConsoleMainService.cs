@@ -51,45 +51,47 @@ namespace Ryoken.Extensions.Hosting
 
             // StartAsync happens during Application Start (aka before ApplicationStarted),
             // so register an action to run on ApplicationStarted.
-            _lifetime.ApplicationStarted.Register(async () =>
-            {
-                try
-                {
-                    // we also need a slight delay, so all the Started message can flush before we actually start.
-                    await Task.Delay(TimeSpan.FromSeconds(0.5));
-                    LogMainIsStarting(_logger);
-
-                    // use a linked source based on the Stopping token, so _main can stop if the App signals
-                    var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.ApplicationStopping);
-
-                    // capture the main task, so we can wait for it to finish if App signals.
-                    _mainTask = _main.ExecuteAsync(cts.Token);
-
-                    // wait for the task to finish normally
-                    await _mainTask.ConfigureAwait(false);
-
-                    LogMainFinishedNormally(_logger);
-                    // when _main finishes, then signal that the app can finish.
-                    _exitCode = 0;
-                }
-                // absorb TaskCancelledException.
-                catch (TaskCanceledException)
-                {
-                    LogMainCancelled(_logger);
-                }
-                catch (Exception ex)
-                {
-                    LogUnhandledInMain(_logger, ex);
-                    _exitCode = 1;
-                }
-                finally
-                {
-                    LogMainFinished(_logger);
-                    _lifetime.StopApplication();
-                }
-            });
+            _lifetime.ApplicationStarted.Register(async () => await RunConsoleMain());
 
             return Task.CompletedTask;
+        }
+
+        private async Task RunConsoleMain()
+        {
+            try
+            {
+                // we also need a slight delay, so all the Started message can flush before we actually start.
+                await Task.Delay(TimeSpan.FromSeconds(0.5));
+                LogMainIsStarting(_logger);
+
+                // use a linked source based on the Stopping token, so _main can stop if the App signals
+                var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.ApplicationStopping);
+
+                // capture the main task, so we can wait for it to finish if App signals.
+                _mainTask = _main.ExecuteAsync(cts.Token);
+
+                // wait for the task to finish normally
+                await _mainTask.ConfigureAwait(false);
+
+                LogMainFinishedNormally(_logger);
+                // when _main finishes, then signal that the app can finish.
+                _exitCode = 0;
+            }
+            // absorb TaskCancelledException.
+            catch (TaskCanceledException)
+            {
+                LogMainCancelled(_logger);
+            }
+            catch (Exception ex)
+            {
+                LogUnhandledInMain(_logger, ex);
+                _exitCode = 1;
+            }
+            finally
+            {
+                LogMainFinished(_logger);
+                _lifetime.StopApplication();
+            }
         }
 
         public async Task StopAsync(CancellationToken token)
