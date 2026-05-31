@@ -1,4 +1,4 @@
-﻿# This workflow will build a .NET project
+# This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
 name: .NET
@@ -59,7 +59,7 @@ jobs:
       run: dotnet nuget push "Ryoken.Extensions.Hosting/bin/Release/*.nupkg" --api-key "${{ steps.login.outputs.NUGET_API_KEY }}"  --source https://api.nuget.org/v3/index.json --skip-duplicate
 
     - name: Attest Build Provenance
-      uses: actions/attest-build-provenance@v3.2.0
+      uses: actions/attest-build-provenance@v4.1.0
       with:
         subject-path: "Ryoken.Extensions.Hosting/bin/Release/*.nupkg"
 
